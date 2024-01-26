@@ -1,7 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera App</title>
+</head>
 <body>
-<h1>Hubi bestellt eine Pizza</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <h1>Camera App</h1>
+    <video id="video" width="640" height="480" autoplay></video><br>
+    <button id="snap">Snap Photo</button><br>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const snapButton = document.getElementById('snap');
+        const context = canvas.getContext('2d');
+
+        // Zugriff auf die Kamera des Geräts
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+            })
+            .catch(function(err) {
+                console.log("Error: " + err);
+            });
+
+        // Event-Listener für den Snap-Button
+        snapButton.addEventListener('click', function() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Hier könntest du die Logik zum Speichern des Bildes implementieren
+            // Zum Beispiel könntest du es an den Server senden oder lokal speichern.
+        });
+    </script>
 </body>
 </html>
