@@ -10,14 +10,14 @@
     <video id="video" width="640" height="480" autoplay></video><br>
     <button id="snap">Snap Photo</button><br>
     <canvas id="canvas" width="640" height="480"></canvas>
-    <div id="imageContainer"></div>
+    <div id="images"></div>
 
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const snapButton = document.getElementById('snap');
         const context = canvas.getContext('2d');
-        const imageContainer = document.getElementById('imageContainer');
+        const imagesDiv = document.getElementById('images');
 
         // Zugriff auf die Kamera des Geräts
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -33,26 +33,37 @@
             takeSnapshot();
         });
 
-        // Funktion zum Aufnehmen und Anzeigen eines Bildes
+        // Funktion, um ein Bild zu machen und anzuzeigen
         function takeSnapshot() {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Erstelle ein neues Bild-Element
             const img = new Image();
             img.src = canvas.toDataURL('image/png');
 
-            // Erstelle ein neues Datum-Objekt für das aktuelle Datum und die Uhrzeit
             const now = new Date();
-            const timestamp = document.createElement('p');
-            timestamp.textContent = now.toLocaleString();
+            const timestamp = now.toLocaleString();
 
-            // Füge das Bild und das Datum zum Container hinzu
-            imageContainer.appendChild(img);
-            imageContainer.appendChild(timestamp);
+            const imageContainer = document.createElement('div');
+            const imageElement = document.createElement('img');
+            const timestampElement = document.createElement('p');
+
+            imageElement.src = img.src;
+            timestampElement.textContent = timestamp;
+
+            imageContainer.appendChild(imageElement);
+            imageContainer.appendChild(timestampElement);
+            imagesDiv.appendChild(imageContainer);
         }
 
-        // Funktion, die alle 10 Sekunden ein Bild aufnimmt
-        setInterval(takeSnapshot, 3600000); // 10000 Millisekunden = 10 Sekunden
+        // Funktion, um automatisch ein Bild zu machen und anzeigen zu lassen
+        function autoSnapshot() {
+            const now = new Date();
+            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+                takeSnapshot();
+            }
+        }
+
+        // Alle 5 Sekunden prüfen, ob ein Bild gemacht werden soll
+        setInterval(autoSnapshot, 5000);
     </script>
 </body>
 </html>
