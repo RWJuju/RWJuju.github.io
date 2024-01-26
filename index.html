@@ -1,47 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camera App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera App</title>
 </head>
 <body>
-  <button id="take-photo">Take Photo</button>
-  <script>
-    const takePhotoButton = document.getElementById('take-photo');
+    <h1>Camera App</h1>
+    <video id="video" width="640" height="480" autoplay></video><br>
+    <button id="snap">Snap Photo</button><br>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="imageContainer"></div>
 
-    takePhotoButton.addEventListener('click', async () => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const videoElement = document.createElement('video');
-        document.body.appendChild(videoElement);
-        videoElement.srcObject = mediaStream;
-        await videoElement.play();
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const snapButton = document.getElementById('snap');
+        const context = canvas.getContext('2d');
+        const imageContainer = document.getElementById('imageContainer');
 
-        const canvas = document.createElement('canvas');
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-        canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL('image/png');
-        
-        // Speichern des Bildes im Local Storage
-        localStorage.setItem('latestPhoto', imageData);
-        
-        // Optional: Hier könntest du Code einfügen, um das Bild an einen Server zu senden
-        
-        // Aufräumen
-        mediaStream.getTracks().forEach(track => track.stop());
-        document.body.removeChild(videoElement);
-        document.body.removeChild(canvas);
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-      }
-    });
+        // Zugriff auf die Kamera des Geräts
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+            })
+            .catch(function(err) {
+                console.log("Error: " + err);
+            });
 
-    // Timer, der alle 60 Minuten ein Bild aufnimmt
-    setInterval(async () => {
-      await takePhotoButton.click();
-    }, 5*1000);
-  </script>
+        // Event-Listener für den Snap-Button
+        snapButton.addEventListener('click', function() {
+            takeSnapshot();
+        });
+
+        // Funktion zum Aufnehmen und Anzeigen eines Bildes
+        function takeSnapshot() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Erstelle ein neues Bild-Element
+            const img = new Image();
+            img.src = canvas.toDataURL('image/png');
+
+            // Erstelle ein neues Datum-Objekt für das aktuelle Datum und die Uhrzeit
+            const now = new Date();
+            const timestamp = document.createElement('p');
+            timestamp.textContent = now.toLocaleString();
+
+            // Füge das Bild und das Datum zum Container hinzu
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(timestamp);
+        }
+
+        // Funktion, die alle 10 Sekunden ein Bild aufnimmt
+        setInterval(takeSnapshot, 10000); // 10000 Millisekunden = 10 Sekunden
+    </script>
 </body>
 </html>
