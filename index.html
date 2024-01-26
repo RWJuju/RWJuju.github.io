@@ -1,37 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera App</title>
 </head>
 <body>
-    <h1>Camera App</h1>
-    <video id="video" width="640" height="480" autoplay></video><br>
-    <button id="snap">Snap Photo</button><br>
-    <canvas id="canvas" width="640" height="480"></canvas>
+  <button id="take-photo">Take Photo</button>
+  <script>
+    const takePhotoButton = document.getElementById('take-photo');
 
-    <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const snapButton = document.getElementById('snap');
-        const context = canvas.getContext('2d');
+    takePhotoButton.addEventListener('click', async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoElement = document.createElement('video');
+        document.body.appendChild(videoElement);
+        videoElement.srcObject = mediaStream;
+        await videoElement.play();
 
-        // Zugriff auf die Kamera des Geräts
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function(err) {
-                console.log("Error: " + err);
-            });
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/png');
+        
+        // Speichern des Bildes im Local Storage
+        localStorage.setItem('latestPhoto', imageData);
+        
+        // Optional: Hier könntest du Code einfügen, um das Bild an einen Server zu senden
+        
+        // Aufräumen
+        mediaStream.getTracks().forEach(track => track.stop());
+        document.body.removeChild(videoElement);
+        document.body.removeChild(canvas);
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+      }
+    });
 
-        // Event-Listener für den Snap-Button
-        snapButton.addEventListener('click', function() {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            // Hier könntest du die Logik zum Speichern des Bildes implementieren
-            // Zum Beispiel könntest du es an den Server senden oder lokal speichern.
-        });
-    </script>
+    // Timer, der alle 60 Minuten ein Bild aufnimmt
+    setInterval(async () => {
+      await takePhotoButton.click();
+    }, 60 * 60 * 1000);
+  </script>
 </body>
 </html>
