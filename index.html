@@ -37,6 +37,14 @@
         // Funktion, um ein Bild zu machen und anzuzeigen
         function takeSnapshot() {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    		// Bild auf dem Kopf anzeigen
+    		context.translate(canvas.width / 2, canvas.height / 2);
+    		context.rotate(Math.PI); // 180 Grad drehen
+    		context.drawImage(video, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+    		context.rotate(-Math.PI); // Zurückdrehen
+    		context.translate(-canvas.width / 2, -canvas.height / 2);
+
             const img = new Image();
             img.src = canvas.toDataURL('image/png');
 
