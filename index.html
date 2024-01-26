@@ -19,14 +19,15 @@
         const context = canvas.getContext('2d');
         const imagesDiv = document.getElementById('images');
 
-        // Zugriff auf die Kamera des Geräts
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function(err) {
-                console.log("Error: " + err);
-            });
+        // Zugriff auf die Rückkamera des Geräts
+	navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    		.then(function(stream) {
+        		video.srcObject = stream;
+    		})
+    		.catch(function(err) {
+        		console.log("Error: " + err);
+    	});
+
 
         // Event-Listener für den Snap-Button
         snapButton.addEventListener('click', function() {
