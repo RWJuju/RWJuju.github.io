@@ -66,13 +66,13 @@
         // Funktion, um automatisch ein Bild zu machen und anzeigen zu lassen
         function autoSnapshot() {
             const now = new Date();
-            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+            if (now.getMinutes() === 8 && now.getSeconds() === 0) {
                 takeSnapshot();
             }
         }
 
-        // Alle 5 Sekunden prüfen, ob ein Bild gemacht werden soll
-        setInterval(autoSnapshot, 5000);
+        // Alle 0,55 Sekunden prüfen, ob ein Bild gemacht werden soll
+        setInterval(autoSnapshot, 550);
     </script>
 </body>
 </html>
